@@ -1,6 +1,6 @@
 # Azure Stack HCI Cluster `[Microsoft.AzureStackHCI/clusters]`
 
-This module deploy an Azure Stack HCI Cluster on the provided Arc Machines.
+This module deploys an Azure Stack HCI Cluster on the provided Arc Machines.
 
 You can reference the module as follows:
 ```bicep
