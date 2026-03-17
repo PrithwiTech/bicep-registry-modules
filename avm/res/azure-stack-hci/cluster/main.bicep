@@ -1,5 +1,5 @@
 metadata name = 'Azure Stack HCI Cluster'
-metadata description = 'This module deploys an Azure Stack HCI Cluster on the provided Arc Machines.'
+metadata description = 'This module deploys an Azure Stack HCI Clusters on the provided Arc Machines.'
 
 // ============== //
 //   Parameters   //
