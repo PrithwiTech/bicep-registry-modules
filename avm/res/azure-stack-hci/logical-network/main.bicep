@@ -57,8 +57,8 @@ param defaultGateway string?
 @description('Optional. The resource ID of the network security group to associate with the subnet.')
 param networkSecurityGroupResourceId string?
 
-@description('Optional. The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided.')
-param addressPrefixes array = []
+//@description('Optional. The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided.')
+//param addressPrefixes array = []
 
 
 import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
@@ -135,7 +135,7 @@ var routeTable = {
   }
 }
 
-resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2025-04-01-preview' = {
+resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2026-02-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -152,7 +152,7 @@ resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2025-04-01-prev
         name: subnet0Name
         properties: {
           addressPrefix: addressPrefix
-          addressPrefixes: !empty(addressPrefixes) ? addressPrefixes : null
+          //addressPrefixes: !empty(addressPrefixes) ? addressPrefixes : null
           ipAllocationMethod: ipAllocationMethod
           ipConfigurationReferences: map(
             (ipConfigurationReferences ?? []),

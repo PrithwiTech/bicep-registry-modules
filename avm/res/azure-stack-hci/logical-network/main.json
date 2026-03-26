@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.41.2.15936",
-      "templateHash": "11427838417793930957"
+      "templateHash": "13354802166925431950"
     },
     "name": "Azure Local Logical Network",
     "description": "This module deploys an Azure Local (formerly Azure Stack HCI) Logical Network."
@@ -307,13 +307,6 @@
         "description": "Optional. The resource ID of the network security group to associate with the subnet."
       }
     },
-    "addressPrefixes": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Optional. The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided."
-      }
-    },
     "roleAssignments": {
       "type": "array",
       "items": {
@@ -384,7 +377,7 @@
     },
     "logicalNetwork": {
       "type": "Microsoft.AzureStackHCI/logicalNetworks",
-      "apiVersion": "2025-04-01-preview",
+      "apiVersion": "2026-02-01-preview",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -401,7 +394,6 @@
             "name": "[parameters('subnet0Name')]",
             "properties": {
               "addressPrefix": "[parameters('addressPrefix')]",
-              "addressPrefixes": "[if(not(empty(parameters('addressPrefixes'))), parameters('addressPrefixes'), null())]",
               "ipAllocationMethod": "[parameters('ipAllocationMethod')]",
               "ipConfigurationReferences": "[map(coalesce(parameters('ipConfigurationReferences'), createArray()), lambda('ipConfigurationReference', createObject('ID', lambdaVariables('ipConfigurationReference').id)))]",
               "networkSecurityGroup": "[if(not(empty(coalesce(parameters('networkSecurityGroupResourceId'), ''))), createObject('id', parameters('networkSecurityGroupResourceId')), null())]",
@@ -478,7 +470,7 @@
       "metadata": {
         "description": "The location of the logical network."
       },
-      "value": "[reference('logicalNetwork', '2025-04-01-preview', 'full').location]"
+      "value": "[reference('logicalNetwork', '2026-02-01-preview', 'full').location]"
     }
   }
 }

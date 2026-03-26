@@ -25,7 +25,7 @@ For examples, please refer to the [Usage Examples](#usage-examples) section.
 | :-- | :-- | :-- |
 | `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
 | `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
-| `Microsoft.AzureStackHCI/logicalNetworks` | 2025-04-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_logicalnetworks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2025-04-01-preview/logicalNetworks)</li></ul> |
+| `Microsoft.AzureStackHCI/logicalNetworks` | 2026-02-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_logicalnetworks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2026-02-01-preview/logicalNetworks)</li></ul> |
 
 ## Usage examples
 
@@ -272,7 +272,6 @@ param vlanId = '<vlanId>'
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`addressPrefixes`](#parameter-addressprefixes) | array | The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`ipAllocationMethod`](#parameter-ipallocationmethod) | string | The IP allocation method. |
 | [`ipConfigurationReferences`](#parameter-ipconfigurationreferences) | array | A list of IP configuration references. |
@@ -397,14 +396,6 @@ The route name. Required if ipAllocationMethod is Static.
 
 - Required: No
 - Type: string
-
-### Parameter: `addressPrefixes`
-
-The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided.
-
-- Required: No
-- Type: array
-- Default: `[]`
 
 ### Parameter: `enableTelemetry`
 
