@@ -1,5 +1,5 @@
-metadata name = 'Azure Stack HCI Logical Network'
-metadata description = 'This module deploys an Azure Stack HCI Logical Network.'
+metadata name = 'Azure Local Logical Network'
+metadata description = 'This module deploys an Azure Local (formerly Azure Stack HCI) Logical Network.'
 
 // ============== //
 //   Parameters   //
@@ -54,9 +54,20 @@ param routeName string?
 @description('Conditional. The default gateway for the network. Required if ipAllocationMethod is Static.')
 param defaultGateway string?
 
+@description('Optional. The resource ID of the network security group to associate with the subnet.')
+param networkSecurityGroupResourceId string?
+
+@description('Optional. The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided.')
+param addressPrefixes array = []
+
+
 import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Array of role assignments to create.')
 param roleAssignments roleAssignmentType[]?
+
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
+@description('Optional. The lock settings of the service.')
+param lock lockType?
 
 var builtInRoleNames = {
   // Add other relevant built-in roles here for your resource as per BCPNFR5
@@ -124,7 +135,7 @@ var routeTable = {
   }
 }
 
-resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2024-05-01-preview' = {
+resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2025-04-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -141,19 +152,33 @@ resource logicalNetwork 'Microsoft.AzureStackHCI/logicalNetworks@2024-05-01-prev
         name: subnet0Name
         properties: {
           addressPrefix: addressPrefix
+          addressPrefixes: !empty(addressPrefixes) ? addressPrefixes : null
           ipAllocationMethod: ipAllocationMethod
           ipConfigurationReferences: map(
             (ipConfigurationReferences ?? []),
             (ipConfigurationReference) => { ID: ipConfigurationReference.id }
-          )
+            )
+          networkSecurityGroup: !empty(networkSecurityGroupResourceId ?? '') ? {
+            id: networkSecurityGroupResourceId!
+          } : null
           vlan: vlanId
           ipPools: ipAllocationMethod == 'Dynamic' ? null : ipPools
           routeTable: ipAllocationMethod == 'Dynamic' ? null : routeTable
-        }
+          }
       }
     ]
     vmSwitchName: vmSwitchName
   }
+}
+resource logicalNetwork_lock 'Microsoft.Authorization/locks@2020-05-01' = if (!empty(lock ?? {})) {
+  name: lock.?name ?? 'lock-${name}'
+  properties: {
+    level: lock.?kind ?? ''
+    notes: lock.?kind == 'CanNotDelete'
+      ? 'Cannot delete resource or child resources.'
+      : 'Cannot delete or modify the resource or child resources.'
+  }
+  scope: logicalNetwork
 }
 
 resource logicalNetwork_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [

@@ -1,6 +1,6 @@
-# Azure Stack HCI Logical Network `[Microsoft.AzureStackHCI/logicalNetworks]`
+# Azure Local Logical Network `[Microsoft.AzureStackHCI/logicalNetworks]`
 
-This module deploys an Azure Stack HCI Logical Network.
+This module deploys an Azure Local (formerly Azure Stack HCI) Logical Network.
 
 You can reference the module as follows:
 ```bicep
@@ -23,8 +23,9 @@ For examples, please refer to the [Usage Examples](#usage-examples) section.
 
 | Resource Type | API Version | References |
 | :-- | :-- | :-- |
+| `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
 | `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
-| `Microsoft.AzureStackHCI/logicalNetworks` | 2024-05-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_logicalnetworks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2024-05-01-preview/logicalNetworks)</li></ul> |
+| `Microsoft.AzureStackHCI/logicalNetworks` | 2025-04-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_logicalnetworks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2025-04-01-preview/logicalNetworks)</li></ul> |
 
 ## Usage examples
 
@@ -271,10 +272,13 @@ param vlanId = '<vlanId>'
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`addressPrefixes`](#parameter-addressprefixes) | array | The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`ipAllocationMethod`](#parameter-ipallocationmethod) | string | The IP allocation method. |
 | [`ipConfigurationReferences`](#parameter-ipconfigurationreferences) | array | A list of IP configuration references. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
+| [`lock`](#parameter-lock) | object | The lock settings of the service. |
+| [`networkSecurityGroupResourceId`](#parameter-networksecuritygroupresourceid) | string | The resource ID of the network security group to associate with the subnet. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`subnet0Name`](#parameter-subnet0name) | string | The subnet name. |
 | [`tags`](#parameter-tags) | object | Tags for the logical network. |
@@ -394,6 +398,14 @@ The route name. Required if ipAllocationMethod is Static.
 - Required: No
 - Type: string
 
+### Parameter: `addressPrefixes`
+
+The address prefixes for the logical network. Used when multiple prefixes are needed. Takes precedence over addressPrefix if both are provided.
+
+- Required: No
+- Type: array
+- Default: `[]`
+
 ### Parameter: `enableTelemetry`
 
 Enable/Disable usage telemetry for module.
@@ -444,6 +456,49 @@ Location for all Resources.
 - Required: No
 - Type: string
 - Default: `[resourceGroup().location]`
+
+### Parameter: `lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-lockname) | string | Specify the name of lock. |
+
+### Parameter: `lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
+### Parameter: `networkSecurityGroupResourceId`
+
+The resource ID of the network security group to associate with the subnet.
+
+- Required: No
+- Type: string
 
 ### Parameter: `roleAssignments`
 
