@@ -40,12 +40,12 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/azure-stack-hci/cluster:<version>`.
 
-- [Deploy Azure Stack HCI Cluster in Azure with a 2 node switched configuration](#example-1-deploy-azure-stack-hci-cluster-in-azure-with-a-2-node-switched-configuration)
+- [Deploy Azure Stack HCI Cluster in Azure with a 1 node configuration](#example-1-deploy-azure-stack-hci-cluster-in-azure-with-a-1-node-configuration)
 - [Deploy Azure Stack HCI Cluster in Azure with a 2 node switched configuration WAF aligned](#example-2-deploy-azure-stack-hci-cluster-in-azure-with-a-2-node-switched-configuration-waf-aligned)
 
-### Example 1: _Deploy Azure Stack HCI Cluster in Azure with a 2 node switched configuration_
+### Example 1: _Deploy Azure Stack HCI Cluster in Azure with a 1 node configuration_
 
-This test deploys an Azure VM to host a 2 node switched Azure Stack HCI cluster, validates the cluster configuration, and then deploys the cluster.
+This test deploys an Azure VM to host a 1 node Azure Stack HCI cluster.
 
 You can find the full example and the setup of its dependencies in the deployment test folder path [/tests/e2e/defaults]
 
@@ -104,7 +104,6 @@ module cluster 'br/public:avm/res/azure-stack-hci/cluster:<version>' = {
         {
           adapter: [
             'StorageA'
-            'StorageB'
           ]
           adapterPropertyOverrides: {
             jumboPacket: '9014'
@@ -136,11 +135,6 @@ module cluster 'br/public:avm/res/azure-stack-hci/cluster:<version>' = {
           adapterName: 'StorageA'
           name: 'Storage1Network'
           vlan: '711'
-        }
-        {
-          adapterName: 'StorageB'
-          name: 'Storage2Network'
-          vlan: '712'
         }
       ]
       subnetMask: '255.255.255.0'
@@ -217,8 +211,7 @@ module cluster 'br/public:avm/res/azure-stack-hci/cluster:<version>' = {
           },
           {
             "adapter": [
-              "StorageA",
-              "StorageB"
+              "StorageA"
             ],
             "adapterPropertyOverrides": {
               "jumboPacket": "9014",
@@ -250,11 +243,6 @@ module cluster 'br/public:avm/res/azure-stack-hci/cluster:<version>' = {
             "adapterName": "StorageA",
             "name": "Storage1Network",
             "vlan": "711"
-          },
-          {
-            "adapterName": "StorageB",
-            "name": "Storage2Network",
-            "vlan": "712"
           }
         ],
         "subnetMask": "255.255.255.0"
@@ -346,7 +334,6 @@ param deploymentSettings = {
     {
       adapter: [
         'StorageA'
-        'StorageB'
       ]
       adapterPropertyOverrides: {
         jumboPacket: '9014'
@@ -378,11 +365,6 @@ param deploymentSettings = {
       adapterName: 'StorageA'
       name: 'Storage1Network'
       vlan: '711'
-    }
-    {
-      adapterName: 'StorageB'
-      name: 'Storage2Network'
-      vlan: '712'
     }
   ]
   subnetMask: '255.255.255.0'
