@@ -8,6 +8,10 @@ The latest version of the changelog can be found [here](https://github.com/Azure
 
 - Modified defaults test to use single node HCI cluster configuration
 
+### Breaking Changes
+
+- None
+
 ## 0.3.0
 
 ### Changes
