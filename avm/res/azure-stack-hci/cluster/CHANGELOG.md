@@ -2,6 +2,12 @@
 
 The latest version of the changelog can be found [here](https://github.com/Azure/bicep-registry-modules/blob/main/avm/res/azure-stack-hci/cluster/CHANGELOG.md).
 
+## 0.3.1
+
+### Changes
+
+- Modified defaults test to use single node HCI cluster configuration
+
 ## 0.3.0
 
 ### Changes
