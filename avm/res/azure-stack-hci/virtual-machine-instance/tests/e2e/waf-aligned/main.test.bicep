@@ -237,5 +237,10 @@ module testDeployment '../../../main.bicep' = {
         osType: 'Windows'
       }
     }
+    securityProfile: {
+      uefiSettings: {
+        secureBootEnabled: true
+      }
+    }
   }
 }

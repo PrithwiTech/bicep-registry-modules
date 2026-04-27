@@ -27,9 +27,7 @@ param networkProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstan
 param osProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.osProfile
 
 @description('Optional. Security profile configuration.')
-param securityProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.securityProfile = {
-  uefiSettings: { secureBootEnabled: true }
-}
+param securityProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.securityProfile = {}
 
 @description('Required. Storage profile configuration.')
 param storageProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.storageProfile

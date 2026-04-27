@@ -226,6 +226,11 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     // Non-required parameters
     adminPassword: '<adminPassword>'
     location: '<location>'
+    securityProfile: {
+      uefiSettings: {
+        secureBootEnabled: true
+      }
+    }
   }
 }
 ```
@@ -291,6 +296,13 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     },
     "location": {
       "value": "<location>"
+    },
+    "securityProfile": {
+      "value": {
+        "uefiSettings": {
+          "secureBootEnabled": true
+        }
+      }
     }
   }
 }
@@ -340,6 +352,11 @@ param storageProfile = {
 // Non-required parameters
 param adminPassword = '<adminPassword>'
 param location = '<location>'
+param securityProfile = {
+  uefiSettings: {
+    secureBootEnabled: true
+  }
+}
 ```
 
 </details>
@@ -565,14 +582,7 @@ Security profile configuration.
 
 - Required: No
 - Type: object
-- Default:
-  ```Bicep
-  {
-      uefiSettings: {
-        secureBootEnabled: true
-      }
-  }
-  ```
+- Default: `{}`
 
 ## Outputs
 
