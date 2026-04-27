@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.41.2.15936",
-      "templateHash": "16560477034757152888"
+      "templateHash": "4039097283661028511"
     },
     "name": "Azure Stack HCI Virtual Machine Instance",
     "description": "This module deploys an Azure Stack HCI virtual machine."
@@ -160,11 +160,7 @@
         },
         "description": "Optional. Security profile configuration."
       },
-      "defaultValue": {
-        "uefiSettings": {
-          "secureBootEnabled": true
-        }
-      }
+      "defaultValue": {}
     },
     "storageProfile": {
       "type": "object",
