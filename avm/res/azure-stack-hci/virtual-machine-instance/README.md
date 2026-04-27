@@ -209,7 +209,7 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     osProfile: {
       adminPassword: '<adminPassword>'
       adminUsername: 'Administrator'
-      computerName: '<computerName>'
+      computerName: 'ashvmiwafvm'
       linuxConfiguration: {}
       windowsConfiguration: {
         enableAutomaticUpdates: true
@@ -268,7 +268,7 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
       "value": {
         "adminPassword": "<adminPassword>",
         "adminUsername": "Administrator",
-        "computerName": "<computerName>",
+        "computerName": "ashvmiwafvm",
         "linuxConfiguration": {},
         "windowsConfiguration": {
           "enableAutomaticUpdates": true,
@@ -323,7 +323,7 @@ param networkProfile = {}
 param osProfile = {
   adminPassword: '<adminPassword>'
   adminUsername: 'Administrator'
-  computerName: '<computerName>'
+  computerName: 'ashvmiwafvm'
   linuxConfiguration: {}
   windowsConfiguration: {
     enableAutomaticUpdates: true
