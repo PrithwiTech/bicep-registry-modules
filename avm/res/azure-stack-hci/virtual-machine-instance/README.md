@@ -25,7 +25,7 @@ For examples, please refer to the [Usage Examples](#usage-examples) section.
 | :-- | :-- | :-- |
 | `Microsoft.Authorization/locks` | 2020-05-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_locks.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks)</li></ul> |
 | `Microsoft.Authorization/roleAssignments` | 2022-04-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.authorization_roleassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments)</li></ul> |
-| `Microsoft.AzureStackHCI/virtualMachineInstances` | 2024-01-01 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_virtualmachineinstances.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2024-01-01/virtualMachineInstances)</li></ul> |
+| `Microsoft.AzureStackHCI/virtualMachineInstances` | 2025-04-01-preview | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.azurestackhci_virtualmachineinstances.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.AzureStackHCI/2025-04-01-preview/virtualMachineInstances)</li></ul> |
 | `Microsoft.GuestConfiguration/guestConfigurationAssignments` | 2020-06-25 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.guestconfiguration_guestconfigurationassignments.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.GuestConfiguration/2020-06-25/guestConfigurationAssignments)</li></ul> |
 | `Microsoft.HybridCompute/machines` | 2024-07-10 | <ul style="padding-left: 0px;"><li>[AzAdvertizer](https://www.azadvertizer.net/azresourcetypes/microsoft.hybridcompute_machines.html)</li><li>[Template reference](https://learn.microsoft.com/en-us/azure/templates/Microsoft.HybridCompute/2024-07-10/machines)</li></ul> |
 
@@ -63,9 +63,8 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     name: '<name>'
     networkProfile: {}
     osProfile: {
-      adminPassword: '<adminPassword>'
       adminUsername: 'Administrator'
-      computerName: 'ashvmiminvm'
+      computerName: '<computerName>'
       linuxConfiguration: {}
       windowsConfiguration: {
         provisionVMAgent: true
@@ -78,6 +77,8 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
         osType: 'Windows'
       }
     }
+    // Non-required parameters
+    adminPassword: '<adminPassword>'
   }
 }
 ```
@@ -112,9 +113,8 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     },
     "osProfile": {
       "value": {
-        "adminPassword": "<adminPassword>",
         "adminUsername": "Administrator",
-        "computerName": "ashvmiminvm",
+        "computerName": "<computerName>",
         "linuxConfiguration": {},
         "windowsConfiguration": {
           "provisionVMAgent": true,
@@ -129,6 +129,10 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
           "osType": "Windows"
         }
       }
+    },
+    // Non-required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
     }
   }
 }
@@ -153,9 +157,8 @@ param hardwareProfile = {
 param name = '<name>'
 param networkProfile = {}
 param osProfile = {
-  adminPassword: '<adminPassword>'
   adminUsername: 'Administrator'
-  computerName: 'ashvmiminvm'
+  computerName: '<computerName>'
   linuxConfiguration: {}
   windowsConfiguration: {
     provisionVMAgent: true
@@ -168,6 +171,8 @@ param storageProfile = {
     osType: 'Windows'
   }
 }
+// Non-required parameters
+param adminPassword = '<adminPassword>'
 ```
 
 </details>
@@ -204,7 +209,7 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
     osProfile: {
       adminPassword: '<adminPassword>'
       adminUsername: 'Administrator'
-      computerName: 'ashvmiwafvm'
+      computerName: '<computerName>'
       linuxConfiguration: {}
       windowsConfiguration: {
         enableAutomaticUpdates: true
@@ -263,7 +268,7 @@ module virtualMachineInstance 'br/public:avm/res/azure-stack-hci/virtual-machine
       "value": {
         "adminPassword": "<adminPassword>",
         "adminUsername": "Administrator",
-        "computerName": "ashvmiwafvm",
+        "computerName": "<computerName>",
         "linuxConfiguration": {},
         "windowsConfiguration": {
           "enableAutomaticUpdates": true,
@@ -318,7 +323,7 @@ param networkProfile = {}
 param osProfile = {
   adminPassword: '<adminPassword>'
   adminUsername: 'Administrator'
-  computerName: 'ashvmiwafvm'
+  computerName: '<computerName>'
   linuxConfiguration: {}
   windowsConfiguration: {
     enableAutomaticUpdates: true
@@ -357,11 +362,11 @@ param location = '<location>'
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`adminPassword`](#parameter-adminpassword) | securestring | The password of arc vm. If it is provided, it will be used for the admin account in osProfile. |
+| [`adminPassword`](#parameter-adminpassword) | securestring | The password of the arc VM admin account. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
-| [`httpProxy`](#parameter-httpproxy) | securestring | The HTTP proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration. |
+| [`httpProxy`](#parameter-httpproxy) | securestring | The HTTP proxy server endpoint to use. |
 | [`httpProxyConfig`](#parameter-httpproxyconfig) | object | HTTP proxy configuration. |
-| [`httpsProxy`](#parameter-httpsproxy) | securestring | The HTTPS proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration. |
+| [`httpsProxy`](#parameter-httpsproxy) | securestring | The HTTPS proxy server endpoint to use. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`securityProfile`](#parameter-securityprofile) | object | Security profile configuration. |
@@ -410,7 +415,7 @@ Storage profile configuration.
 
 ### Parameter: `adminPassword`
 
-The password of arc vm. If it is provided, it will be used for the admin account in osProfile.
+The password of the arc VM admin account.
 
 - Required: No
 - Type: securestring
@@ -425,7 +430,7 @@ Enable/Disable usage telemetry for module.
 
 ### Parameter: `httpProxy`
 
-The HTTP proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration.
+The HTTP proxy server endpoint to use.
 
 - Required: No
 - Type: securestring
@@ -436,11 +441,10 @@ HTTP proxy configuration.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `httpsProxy`
 
-The HTTPS proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration.
+The HTTPS proxy server endpoint to use.
 
 - Required: No
 - Type: securestring
@@ -584,7 +588,7 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/hybrid-compute/machine:0.4.1` | Remote reference |
+| `br/public:avm/res/hybrid-compute/machine:0.4.2` | Remote reference |
 | `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
 
 ## Data Collection
