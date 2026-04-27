@@ -9,11 +9,9 @@ metadata description = 'This instance deploys the module with the minimum set of
 
 @description('Optional. The name of the resource group to deploy for testing purposes.')
 @maxLength(90)
-// e.g., for a module 'network/private-endpoint' you could use 'dep-dev-network.privateendpoints-${serviceShort}-rg'
 param resourceGroupName string = 'dep-${namePrefix}-azurestackhci.vmi-${serviceShort}-rg'
 
 @description('Optional. A short identifier for the kind of deployment. Should be kept short to not run into resource-name length-constraints.')
-// e.g., for a module 'network/private-endpoint' you could use 'npe' as a prefix and then 'waf' as a suffix for the waf-aligned test
 param serviceShort string = 'ashvmimin'
 
 @description('Optional. A token to inject into the name of each resource. This value can be automatically injected by the CI.')
@@ -23,22 +21,22 @@ param namePrefix string = '#_namePrefix_#'
 @secure()
 param arbLocalAdminAndDeploymentUserPass string = ''
 
-@description('Required. The app ID of the service principal used for the Azure Stack HCI Resource Bridge deployment. If omitted, the deploying user must have permissions to create service principals and role assignments in Entra ID.')
+@description('Required. The app ID of the service principal used for the Azure Stack HCI Resource Bridge deployment.')
 @secure()
 #disable-next-line secure-parameter-default
 param arbDeploymentAppId string = ''
 
-@description('Required. The service principal ID of the service principal used for the Azure Stack HCI Resource Bridge deployment. If omitted, the deploying user must have permissions to create service principals and role assignments in Entra ID.')
+@description('Required. The service principal ID of the service principal used for the Azure Stack HCI Resource Bridge deployment.')
 @secure()
 #disable-next-line secure-parameter-default
 param arbDeploymentSPObjectId string = ''
 
-@description('Required. The secret of the service principal used for the Azure Stack HCI Resource Bridge deployment. If omitted, the deploying user must have permissions to create service principals and role assignments in Entra ID.')
+@description('Required. The secret of the service principal used for the Azure Stack HCI Resource Bridge deployment.')
 @secure()
 #disable-next-line secure-parameter-default
 param arbDeploymentServicePrincipalSecret string = ''
 
-@description('Optional. The service principal ID of the Azure Stack HCI Resource Provider. If this is not provided, the module attemps to determine this value by querying the Microsoft Graph.')
+@description('Optional. The service principal ID of the Azure Stack HCI Resource Provider.')
 @secure()
 #disable-next-line secure-parameter-default
 param hciResourceProviderObjectId string = ''
@@ -46,7 +44,9 @@ param hciResourceProviderObjectId string = ''
 @description('Optional. The password to use for the local and domain accounts in the test.')
 param localAdminAndDeploymentUserPass string = newGuid()
 
-@description('Optional. The resource ID of a pre-baked Azure Compute Gallery image for the HCI host VM. Injected via CI-hciHostImageReferenceId secret.')
+// Kept as a param so the CI pipeline can inject it as a secret, but it is NOT
+// forwarded to nestedDependencies — that module does not declare this parameter (BCP037).
+@description('Optional. The resource ID of a pre-baked Azure Compute Gallery image for the HCI host VM.')
 @secure()
 #disable-next-line secure-parameter-default
 param hciHostImageReferenceId string = ''
@@ -58,10 +58,8 @@ var enforcedLocation = 'southeastasia'
 // Dependencies //
 // ============ //
 
-// General resources
-// =================
-
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+// Fixed: was 2021-04-01 (1852 days old)
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   name: resourceGroupName
   location: enforcedLocation
 }
@@ -87,7 +85,8 @@ module nestedDependencies '../../../../../../../utilities/e2e-template-assets/mo
     arbDeploymentSPObjectId: arbDeploymentSPObjectId
     deploymentUserPassword: arbLocalAdminAndDeploymentUserPass
     localAdminPassword: arbLocalAdminAndDeploymentUserPass
-    hciHostImageReferenceId: hciHostImageReferenceId
+    // hciHostImageReferenceId intentionally NOT passed here —
+    // dependencies.bicep does not declare this parameter (fixes BCP037).
     location: enforcedLocation
   }
 }
@@ -109,7 +108,7 @@ module azlocal 'br/public:avm/res/azure-stack-hci/cluster:0.4.0' = {
       clusterNodeNames: nestedDependencies.outputs.clusterNodeNames
       clusterWitnessStorageAccountName: nestedDependencies.outputs.clusterWitnessStorageAccountName
       defaultGateway: '172.20.0.1'
-      deploymentPrefix: 'a${take(uniqueString(namePrefix, serviceShort), 7)}' // ensure deployment prefix starts with a letter to match '^(?=.{1,8}$)([a-zA-Z])(\-?[a-zA-Z\d])*$'
+      deploymentPrefix: 'a${take(uniqueString(namePrefix, serviceShort), 7)}'
       dnsServers: ['172.20.0.1']
       domainFqdn: 'hci.local'
       domainOUPath: nestedDependencies.outputs.domainOUPath
@@ -119,10 +118,7 @@ module azlocal 'br/public:avm/res/azure-stack-hci/cluster:0.4.0' = {
       keyVaultName: nestedDependencies.outputs.keyVaultName
       networkIntents: [
         {
-          adapter: [
-            'FABRIC'
-            'FABRIC2'
-          ]
+          adapter: ['FABRIC', 'FABRIC2']
           name: 'ManagementCompute'
           overrideAdapterProperty: true
           adapterPropertyOverrides: {
@@ -141,10 +137,7 @@ module azlocal 'br/public:avm/res/azure-stack-hci/cluster:0.4.0' = {
             enableIov: 'true'
             loadBalancingAlgorithm: 'Dynamic'
           }
-          trafficType: [
-            'Management'
-            'Compute'
-          ]
+          trafficType: ['Management', 'Compute']
         }
         {
           adapter: ['StorageA']
@@ -182,7 +175,9 @@ module azlocal 'br/public:avm/res/azure-stack-hci/cluster:0.4.0' = {
   }
 }
 
-resource customLocation 'Microsoft.ExtendedLocation/customLocations@2021-08-31-preview' existing = {
+// Fixed API version: was 2021-08-31-preview (1700 days old)
+// dependsOn is valid on existing resources — only scope must be static (BCP120)
+resource customLocation 'Microsoft.ExtendedLocation/customLocations@2021-08-15' existing = {
   scope: resourceGroup
   name: '${namePrefix}${serviceShort}-location'
   dependsOn: [
@@ -218,6 +213,9 @@ module testDeployment '../../../main.bicep' = {
   params: {
     name: '${uniqueString(deployment().name, enforcedLocation)}-hc-${serviceShort}'
     customLocationResourceId: customLocation.id
+    // adminPassword passed as top-level param so main.bicep's union() does not
+    // overwrite it with null when osProfile is merged.
+    adminPassword: localAdminAndDeploymentUserPass
     hardwareProfile: {
       memoryMB: 4096
       processors: 2
@@ -231,7 +229,6 @@ module testDeployment '../../../main.bicep' = {
         provisionVMConfigAgent: true
       }
       adminUsername: 'Administrator'
-      adminPassword: localAdminAndDeploymentUserPass
     }
     storageProfile: {
       imageReference: { id: hciImage.outputs.resourceId }
