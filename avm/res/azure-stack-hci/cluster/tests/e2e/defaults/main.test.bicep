@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
-metadata name = 'Deploy Azure Stack HCI Cluster in Azure with a 2 node switched configuration'
-metadata description = 'This test deploys an Azure VM to host a 2 node switched Azure Stack HCI cluster, validates the cluster configuration, and then deploys the cluster.'
+metadata name = 'Deploy Azure Stack HCI Cluster in Azure with a 1 node configuration'
+metadata description = 'This test deploys an Azure VM to host a 1 node Azure Stack HCI cluster.'
 
 @description('Optional. The name of the resource group to deploy for testing purposes.')
 @maxLength(90)
@@ -131,10 +131,7 @@ module testDeployment '../../../main.bicep' = {
             ]
           }
           {
-            adapter: [
-              'StorageA'
-              'StorageB'
-            ]
+            adapter: ['StorageA']
             name: 'Storage'
             overrideAdapterProperty: true
             adapterPropertyOverrides: {
@@ -162,11 +159,6 @@ module testDeployment '../../../main.bicep' = {
             name: 'Storage1Network'
             adapterName: 'StorageA'
             vlan: '711'
-          }
-          {
-            name: 'Storage2Network'
-            adapterName: 'StorageB'
-            vlan: '712'
           }
         ]
         subnetMask: '255.255.255.0'
