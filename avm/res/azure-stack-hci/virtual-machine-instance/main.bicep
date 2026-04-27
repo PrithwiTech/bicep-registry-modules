@@ -17,7 +17,7 @@ param enableTelemetry bool = true
 param hardwareProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.hardwareProfile
 
 @description('Optional. HTTP proxy configuration.')
-param httpProxyConfig resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.httpProxyConfig = {}
+param httpProxyConfig resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.httpProxyConfig?
 
 @description('Required. Network profile configuration.')
 param networkProfile resourceInput<'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview'>.properties.networkProfile
@@ -39,15 +39,15 @@ import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5
 param roleAssignments roleAssignmentType[]?
 
 @secure()
-@description('Optional. The password of arc vm. If it is provided, it will be used for the admin account in osProfile.')
+@description('Optional. The password of the arc VM admin account.')
 param adminPassword string?
 
 @secure()
-@description('Optional. The HTTP proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration.')
+@description('Optional. The HTTP proxy server endpoint to use.')
 param httpProxy string?
 
 @secure()
-@description('Optional. The HTTPS proxy server endpoint to use. If it is provided, it will be used in HttpProxyConfiguration.')
+@description('Optional. The HTTPS proxy server endpoint to use.')
 param httpsProxy string?
 
 // ============== //
@@ -55,7 +55,7 @@ param httpsProxy string?
 // ============== //
 
 #disable-next-line no-deployments-resources
-resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-11-01' = if (enableTelemetry) {
   name: '46d3xbcp.res.azurestackhci-virtualmachineinstance.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
   properties: {
     mode: 'Incremental'
@@ -74,7 +74,6 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
 }
 
 var builtInRoleNames = {
-  // Add other relevant built-in roles here for your resource as per BCPNFR5
   Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
   Reader: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')
   'User Access Administrator': subscriptionResourceId(
@@ -98,9 +97,11 @@ var formattedRoleAssignments = [
   })
 ]
 
-var enableReferencedModulesTelemetry bool = false
+var enableReferencedModulesTelemetry = false
 
-module hybridCompute 'br/public:avm/res/hybrid-compute/machine:0.4.1' = {
+// Deploy the Arc machine first — the existing resource below takes an implicit
+// dependency through the use of hybridCompute.outputs.name as its name property.
+module hybridCompute 'br/public:avm/res/hybrid-compute/machine:0.4.2' = {
   name: '${name}-deployment'
   scope: resourceGroup()
   params: {
@@ -111,14 +112,13 @@ module hybridCompute 'br/public:avm/res/hybrid-compute/machine:0.4.1' = {
   }
 }
 
-resource existingMachine 'Microsoft.HybridCompute/machines@2023-10-03-preview' existing = {
+// Reference the Arc machine by name (known at deploy time — satisfies BCP120).
+// The dependency on hybridCompute is expressed via dependsOn on virtualMachineInstance below.
+resource existingMachine 'Microsoft.HybridCompute/machines@2024-07-10' existing = {
   name: name
-  dependsOn: [
-    hybridCompute
-  ]
 }
 
-resource virtualMachineInstance 'Microsoft.AzureStackHCI/virtualMachineInstances@2024-01-01' = {
+resource virtualMachineInstance 'Microsoft.AzureStackHCI/virtualMachineInstances@2025-04-01-preview' = {
   name: 'default'
   extendedLocation: {
     type: 'CustomLocation'
@@ -128,16 +128,18 @@ resource virtualMachineInstance 'Microsoft.AzureStackHCI/virtualMachineInstances
     hardwareProfile: {
       memoryMB: hardwareProfile.memoryMB
       processors: hardwareProfile.processors
-      vmSize: empty(hardwareProfile.?vmSize) ? 'Custom' : hardwareProfile.?vmSize
+      vmSize: empty(hardwareProfile.?vmSize ?? '') ? 'Custom' : hardwareProfile.?vmSize
       dynamicMemoryConfig: hardwareProfile.?dynamicMemoryConfig
     }
-    httpProxyConfig: empty(httpProxyConfig) ? null : union(
-      httpProxyConfig,
-      {
-        httpProxy: httpProxy
-        httpsProxy: httpsProxy
-      }
-    )
+    httpProxyConfig: (httpProxyConfig == null && httpProxy == null && httpsProxy == null)
+      ? null
+      : union(
+          httpProxyConfig ?? {},
+          {
+            httpProxy: httpProxy
+            httpsProxy: httpsProxy
+          }
+        )
     networkProfile: networkProfile
     osProfile: union(
       osProfile,
@@ -149,6 +151,9 @@ resource virtualMachineInstance 'Microsoft.AzureStackHCI/virtualMachineInstances
     storageProfile: storageProfile
   }
   scope: existingMachine
+  dependsOn: [
+    hybridCompute
+  ]
 }
 
 resource virtualMachine_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
@@ -164,7 +169,7 @@ resource virtualMachine_roleAssignments 'Microsoft.Authorization/roleAssignments
       description: roleAssignment.?description
       principalType: roleAssignment.?principalType
       condition: roleAssignment.?condition
-      conditionVersion: !empty(roleAssignment.?condition) ? (roleAssignment.?conditionVersion ?? '2.0') : null // Must only be set if condtion is set
+      conditionVersion: !empty(roleAssignment.?condition) ? (roleAssignment.?conditionVersion ?? '2.0') : null
       delegatedManagedIdentityResourceId: roleAssignment.?delegatedManagedIdentityResourceId
     }
     scope: virtualMachineInstance
